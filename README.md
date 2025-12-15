@@ -14,6 +14,7 @@
     - Traefik 固定到入口节点标签（可选 NodePort）
     - NFS 动态 StorageClass（RWX）
 
+## 一键执行
 ```shell
 wget -qO k3s_setup.sh https://raw.githubusercontent.com/Steve0723/k3s-install-script/main/k3s_setup.sh && sudo bash k3s_setup.sh
 ```
