@@ -707,6 +707,32 @@ cluster_quick_check() {
     echo "==== [集群快速检查] 结束 ===="
 }
 
+uninstall_k3s() {
+    echo "==== [卸载 k3s] 开始 ===="
+    local server_uninstall="/usr/local/bin/k3s-uninstall.sh"
+    local agent_uninstall="/usr/local/bin/k3s-agent-uninstall.sh"
+
+    if [ ! -x "${server_uninstall}" ] && [ ! -x "${agent_uninstall}" ]; then
+        echo "未找到 k3s 卸载脚本，可能未安装 k3s。"
+        return 0
+    fi
+
+    if ask_yes_no "确认卸载本机 k3s？操作不可恢复" "n"; then
+        if [ -x "${server_uninstall}" ]; then
+            echo "检测到 server 安装，将执行：${server_uninstall}"
+            "${server_uninstall}"
+        elif [ -x "${agent_uninstall}" ]; then
+            echo "检测到 agent 安装，将执行：${agent_uninstall}"
+            "${agent_uninstall}"
+        fi
+        echo "卸载完成。"
+    else
+        echo "已取消卸载。"
+    fi
+
+    echo "==== [卸载 k3s] 结束 ===="
+}
+
 show_menu() {
     cat <<'EOF'
 ========================================
@@ -721,6 +747,7 @@ show_menu() {
   5) 安装 k3s agent（worker/入口等）
   6) 控制面后置配置向导（Traefik 固定入口 + NFS 动态 SC）
   7) 集群快速检查（需要 kubectl/kubeconfig）
+  8) 卸载 k3s（自动检测 server/agent）
 
   0) 退出
 EOF
@@ -740,6 +767,7 @@ main() {
             5) install_k3s_agent ;;
             6) post_config_wizard ;;
             7) cluster_quick_check ;;
+            8) uninstall_k3s ;;
             0) echo "已退出。"; exit 0 ;;
             *) echo "无效选项：${choice}" ;;
         esac
@@ -750,4 +778,3 @@ main() {
 }
 
 main "$@"
-
